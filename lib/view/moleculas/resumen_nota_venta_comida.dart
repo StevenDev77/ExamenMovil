@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../model/pedido_comida_model.dart';
-import '../../../temas/index.dart';
+import '../../temas/index.dart';
+import '../atomos/nota_fila_resumen.dart';
+import '../atomos/nota_item_pedido.dart';
+import '../atomos/nota_separador.dart';
 
 class ResumenNotaVentaComida extends StatelessWidget {
   final PedidoComidaModelo pedido;
@@ -12,83 +15,97 @@ class ResumenNotaVentaComida extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fechaActual = DateTime.now();
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Encabezado
             Container(
-              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: ColoresApp.primario,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFFFF1D8), Color(0xFFFFF8E1), Color(0xFFFFFFFF)],
                 ),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    '🧾',
-                    style: TextStyle(fontSize: 32),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'NOTA DE VENTA',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: ColoresApp.primario, width: 1.8),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1A000000),
+                    blurRadius: 14,
+                    offset: Offset(0, 7),
                   ),
                 ],
               ),
-            ),
-            // Contenedor principal de la factura
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: ColoresApp.primario, width: 2),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-                color: const Color(0xFFFFF8E1),
-              ),
               child: Column(
                 children: [
-                  // Información de empresa, cliente y fecha
+                  // Encabezado
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: ColoresApp.primario,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                    ),
+                    child: const Column(
+                      children: [
+                        Text(
+                          '🧾',
+                          style: TextStyle(fontSize: 32),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'NOTA DE VENTA',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.8,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Empresa de comida rápida',
+                          'Empresa de comida rapida',
                           style: TextStyle(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             fontSize: 12,
-                            color: Color(0xFF212121),
+                            color: ColoresApp.textoOscuro,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Cliente: ${pedido.nombreCliente}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF212121),
+                            Expanded(
+                              child: Text(
+                                'Cliente: ${pedido.nombreCliente}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: ColoresApp.textoOscuro,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            const SizedBox(width: 12),
                             Text(
-                              'Fecha: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
+                              'Fecha: ${fechaActual.day}/${fechaActual.month}/${fechaActual.year}',
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFF212121),
+                                color: ColoresApp.textoOscuro,
                               ),
                             ),
                           ],
@@ -96,13 +113,9 @@ class ResumenNotaVentaComida extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Separador
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: Container(
-                      height: 1.5,
-                      color: ColoresApp.primario,
-                    ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 14),
+                    child: NotaSeparador(),
                   ),
                   // Detalles del pedido
                   Padding(
@@ -112,109 +125,41 @@ class ResumenNotaVentaComida extends StatelessWidget {
                       children: [
                         const Text(
                           'DETALLES DEL PEDIDO',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                         ),
-                        const Divider(
-                            height: 12, thickness: 1.5, color: Color(0xFFD32F2F)),
+                        const Divider(height: 12, thickness: 1.5, color: Color(0xFFD32F2F)),
                         ...pedido.items.asMap().entries.map((entry) {
                           final idx = entry.key + 1;
                           final item = entry.value;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '$idx. ${item.producto}',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14),
-                                ),
-                                Text(
-                                  '   ${item.tipoCombo}',
-                                  style: const TextStyle(
-                                      fontSize: 12, color: Colors.grey),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '   ${item.cantidad}x \$${item.precioUnitario.toStringAsFixed(2)}',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                    Text(
-                                      '\$${item.subtotal.toStringAsFixed(2)}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
+
+                          return NotaItemPedido(indice: idx, item: item);
                         }),
                       ],
                     ),
                   ),
-                  // Separador
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: Container(
-                      height: 1.5,
-                      color: ColoresApp.primario,
-                    ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 14),
+                    child: NotaSeparador(),
                   ),
                   // Totales
                   Padding(
                     padding: const EdgeInsets.all(14),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Subtotal:',
-                                style: TextStyle(fontSize: 14)),
-                            Text(
-                              '\$${pedido.subtotal.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 14),
-                            ),
-                          ],
+                        NotaFilaResumen(
+                          etiqueta: 'Subtotal:',
+                          valor: '\$${pedido.subtotal.toStringAsFixed(2)}',
                         ),
                         const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('IVA (15%):', style: TextStyle(fontSize: 14)),
-                            Text(
-                              '\$${pedido.iva.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 14),
-                            ),
-                          ],
+                        NotaFilaResumen(
+                          etiqueta: 'IVA (15%):',
+                          valor: '\$${pedido.iva.toStringAsFixed(2)}',
                         ),
                         const Divider(height: 14, thickness: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'TOTAL A PAGAR:',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            Text(
-                              '\$${pedido.total.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Color(0xFFD32F2F),
-                              ),
-                            ),
-                          ],
+                        NotaFilaResumen(
+                          etiqueta: 'TOTAL A PAGAR:',
+                          valor: '\$${pedido.total.toStringAsFixed(2)}',
+                          esTotal: true,
                         ),
                       ],
                     ),
